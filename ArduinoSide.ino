@@ -23,7 +23,7 @@ void loop() {
   // Read and parse the response
   if (mySerial.available()) {
     String data = mySerial.readStringUntil('\n');
-    parseDetectionData(data);
+    processDetections(data);
   }
 }
 
