@@ -5,7 +5,6 @@
 // DetectionBuffer.cpp
 
 #include "DetectionsBuffer.h"
-#include <cstdio>
 #include <string.h>
 
 // Global buffer and index definitions
@@ -17,8 +16,8 @@ Detection& Detection::operator=(const Detection& other) {
         // Copy each field from 'other' to 'this'
         strcpy(this->class_name, other.class_name);
         this->confidence = other.confidence;
+		this->timestamp = other.timestamp;
         this->depth_mm = other.depth_mm;
-        this->depth_in = other.depth_in;
         this->x = other.x;
         this->y = other.y;
         this->z = other.z;
@@ -47,28 +46,24 @@ int getBufferSize() {
     return BUFFER_SIZE;
 }
 
-Detection getLatestDetection() {
-    Detection closestDetection;
-    long long minTime = 10000000000; // Set initial depth to maximum possible float value
-    closestDetection = getClosestDetection();
-
-    for (auto & i : buffer) {
-        // Check if the detection's depth is less than the current minimum
-        if (i.timestamp > 0 && i.timestamp < minTime) {
-            minTime = i.timestamp;
-            closestDetection = i;
-        }
-    }
-
-    // If no valid detection was found, minDepth will still be FLT_MAX
-    // You can handle this scenario based on your application's needs
-
-    return closestDetection;
-}
 
 Detection getClosestDetection() {
     int latestIndex = (bufferIndex - 1 + BUFFER_SIZE) % BUFFER_SIZE;
     return buffer[latestIndex];
+}
+
+Detection getLatestDetection() {
+    float minTime = 1000; // Set initial timestamp to maximum possible float value
+    Detection latestDetection;
+
+    for (auto & i : buffer) {
+        // Check if the detection's timestamp is less than the current minimum
+        if (i.timestamp > 0 && i.timestamp < minTime) {
+            minTime = i.timestamp;
+            latestDetection = i;
+        }
+    }
+    return latestDetection;
 }
 
 void clearBuffer() {
