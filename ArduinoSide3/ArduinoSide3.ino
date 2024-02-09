@@ -5,7 +5,9 @@
 #define BUFFER_SIZE 512  // Define the size of the data buffer
 #define MAX_DETECTION_LENGTH 40  // Define the maximum length of a single detection string
 
-SoftwareSerial mySerial(10, 11); // Initialize SoftwareSerial for communication, pins 10 (RX) and 11 (TX)
+// pins 10 (RX) and 11 (TX) (Note Orange to 10, Yellow to 11, Black to Ground)
+SoftwareSerial mySerial(10, 11); // Initialize SoftwareSerial for communication
+
 char dataBuffer[BUFFER_SIZE];  // Buffer to store incoming data
 volatile bool newDataAvailable = false;  // Flag to indicate new data availability
 unsigned long previousMillis = 0;  // Stores the last time a request was made
