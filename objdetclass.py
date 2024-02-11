@@ -27,11 +27,14 @@ CLASS_COLORS = {
     'SmallBox': (230, 46, 208),
     'StartZone': (100, 110, 5),
     'RedZone': (255, 0, 0),
+    'RedZone': (25, 123, 47),
     'GreenZone': (0, 255, 0),
     'BlueZone': (0, 60, 200),
     'YellowLine': (100, 150, 20),
     'WhiteLine': (255, 255, 255)
 }
+
+
 CONFIDENCE_THRESHOLD = 0.6
 MM_TO_INCHES = 25.2
 

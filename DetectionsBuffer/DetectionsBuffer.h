@@ -51,7 +51,9 @@ struct Detection {
     Detection& operator=(const Detection& other);
 };
 
-// Global constants and function declarations
+
+
+
 const int BUFFER_SIZE = 10; // Size of the buffer to store detections
 
 // Function declarations

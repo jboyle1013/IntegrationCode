@@ -1,3 +1,0 @@
-C:/Users/jorda/Documents/DetectionsBuffer/cmake-build-debug/CMakeFiles/DetectionsBuffer.dir
-C:/Users/jorda/Documents/DetectionsBuffer/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/jorda/Documents/DetectionsBuffer/cmake-build-debug/CMakeFiles/rebuild_cache.dir
