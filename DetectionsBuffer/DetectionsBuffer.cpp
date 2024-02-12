@@ -49,11 +49,39 @@ int getBufferSize() {
     return BUFFER_SIZE;
 }
 
-// Function to get the closest detection (most recently added)
-Detection getClosestDetection() {
-    int latestIndex = (bufferIndex - 1 + BUFFER_SIZE) % BUFFER_SIZE;
-    return buffer[latestIndex]; // Return the latest detection
+
+// Function to get the first detection with the matching name (more for zones)
+Detection getSpecificDetection(char name[15]) {
+    
+    Detection specificDetection;
+
+    // Loop through the buffer to find the first detection with the same name
+    for (auto & i : buffer) {
+        if( strcmp(name, i.class_name) == 0 )  {
+            specificDetection = i;
+			break;
+        }
+    }
+    return specificDetection; // Return the detection with the matching name
 }
+
+
+
+// Function to get the closest detection
+Detection getClosestDetection() {
+    float minDist = 1000; // Initialize with a large distance value
+    Detection closestDetection;
+
+    // Loop through the buffer to find the detection with the smallest distance
+    for (auto & i : buffer) {
+        if (i.depth_mm > 0 && i.depth_mm < minDist) {
+            minDist = i.depth_mm;
+            closestDetection = i;
+        }
+    }
+    return closestDetection; // Return the detection with the smallest distance
+}
+
 
 // Function to get the detection with the earliest timestamp
 Detection getLatestDetection() {

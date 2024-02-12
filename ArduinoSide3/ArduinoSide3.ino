@@ -20,7 +20,7 @@ void setup() {
     Serial.begin(9600);
     mySerial.begin(9600);
     clearBuffer();
-    delay(3000); // Wait for everything to stabilize
+    delay(45000); // Wait for everything to stabilize
 
     PT_INIT(&ptRead);
     PT_INIT(&ptProcess);
@@ -39,7 +39,7 @@ static int protothreadRead(struct pt* pt) {
     PT_BEGIN(pt);
 
     while (1) {
-        delay(75);
+        delay(50);
         mySerial.println("REQUEST");
 
         // Wait for a response with a timeout
@@ -114,10 +114,10 @@ void parseDetection(char* detection) {
     char class_name[MAX_DETECTION_LENGTH];
     float confidence;
     float depth_mm;
-    float depth_in;
+
     float x, y, z;
     float horizontal_angle, timestamp;
-    char direction[MAX_DETECTION_LENGTH];
+    char direction[6];
     char* token;
     char* rest = detection;
 
@@ -188,7 +188,7 @@ void parseDetection(char* detection) {
     // Serial.print("Direction: ");
     // Serial.println(direction);
 
-    Detection newDetection(class_name, confidence,timestamp, depth_mm, depth_in, x, y, z, horizontal_angle, direction);
+    Detection newDetection(class_name, confidence,timestamp, depth_mm, x, y, z, horizontal_angle, direction);
     // Serial.println("Newest Detection");
     // printDetection(newDetection);
     addDetectionToBuffer(newDetection);
@@ -240,4 +240,3 @@ void printDetection(const Detection& d) {
         Serial.println("No Detection Data");
     }
 }
-
