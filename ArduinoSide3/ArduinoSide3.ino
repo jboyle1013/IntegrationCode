@@ -168,25 +168,6 @@ void parseDetection(char* detection) {
         strncpy(direction, token, MAX_DETECTION_LENGTH);
     }
 
-    // Now you can print or process the parsed data
-    // Serial.print("Class Name: ");
-    // Serial.println(class_name);
-    // Serial.print("Confidence: ");
-    // Serial.println(confidence, 4);
-    // Serial.print("Timestamp: ");
-    // Serial.println(timestamp, 4);
-    // Serial.print("Depth MM: ");
-    // Serial.println(depth_mm, 4);
-    // Serial.print("X Component: ");
-    // Serial.println(x, 4);
-    // Serial.print("Y Component: ");
-    // Serial.println(y, 4);
-    // Serial.print("Z Component: ");
-    // Serial.println(z, 4);
-    // Serial.print("Horizontal Angle: ");
-    // Serial.println(horizontal_angle, 4);
-    // Serial.print("Direction: ");
-    // Serial.println(direction);
 
     Detection newDetection(class_name, confidence,timestamp, depth_mm, x, y, z, horizontal_angle, direction);
     // Serial.println("Newest Detection");
