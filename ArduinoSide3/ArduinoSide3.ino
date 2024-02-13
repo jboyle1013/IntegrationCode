@@ -1,116 +1,117 @@
+// Include necessary libraries and define constants
 #include <pt.h>
 #include <DetectionsBuffer.h>
 #include <SoftwareSerial.h>
-#define BUFFER_SIZE 512
-#define MAX_DETECTION_LENGTH 15
+#define BUFFER_SIZE 512 // Size of the data buffer
+#define MAX_DETECTION_LENGTH 15 // Max length for detection string
 
-SoftwareSerial mySerial(10, 11); // RX, TX pins
-char dataBuffer[BUFFER_SIZE];
-volatile bool newDataAvailable = false;
-unsigned long previousMillis = 0;  // Stores the last time a request was made
-const long interval = 10000;      
-volatile bool printDetectionsFlag = false;
+// Initialize software serial communication on pins 10 (RX) and 11 (TX)
+SoftwareSerial mySerial(10, 11);
 
+// Global variables
+char dataBuffer[BUFFER_SIZE]; // Buffer to store incoming data
+volatile bool newDataAvailable = false; // Flag to indicate new data arrival
+unsigned long previousMillis = 0;  // Timestamp of the last request
+const long interval = 10000; // Interval between requests in milliseconds
+volatile bool printDetectionsFlag = false; // Flag to control detection printing
 
-
+// Protothread structures for multitasking
 struct pt ptRead, ptProcess, ptPrint;
 
-
 void setup() {
-    Serial.begin(9600);
-    mySerial.begin(9600);
-    clearBuffer();
-    delay(45000); // Wait for everything to stabilize
+    Serial.begin(9600); // Start serial communication with the computer
+    mySerial.begin(9600); // Start serial communication with the sensor module
+    clearBuffer(); // Clear the data buffer
+    delay(45000); // Initial delay for system stabilization
 
+    // Initialize protothreads
     PT_INIT(&ptRead);
     PT_INIT(&ptProcess);
     PT_INIT(&ptPrint);
 }
 
-
 void loop() {
+    // Run protothreads
     protothreadRead(&ptRead);
     protothreadProcess(&ptProcess);
     protothreadPrint(&ptPrint);
 }
 
-
+// Protothread for reading data from the sensor module
 static int protothreadRead(struct pt* pt) {
     PT_BEGIN(pt);
 
     while (1) {
         delay(50);
-        mySerial.println("REQUEST");
+        mySerial.println("REQUEST"); // Send a request to the sensor module
 
-        // Wait for a response with a timeout
+        // Wait for a response with a timeout of 5 seconds
         unsigned long startTime = millis();
         while (!mySerial.available() && millis() - startTime < 5000) {
-          // Waiting for response with 5 seconds timeout
+            // Waiting for response
         }
-        // Read and store the response
+
+        // Read the response if available and set flag
         if (mySerial.available()) {
             String data = mySerial.readStringUntil('\n');
             data.toCharArray(dataBuffer, BUFFER_SIZE);
-            newDataAvailable = true; // Set the flag to indicate new data
+            newDataAvailable = true;
         }
 
-        PT_YIELD(pt);  // Allow other protothreads to run
+        PT_YIELD(pt); // Yield control to other protothreads
     }
 
     PT_END(pt);
 }
 
-
+// Protothread for processing received data
 static int protothreadProcess(struct pt* pt) {
     PT_BEGIN(pt);
 
     while (1) {
         if (newDataAvailable) {
-            // Process the data in dataBuffer
             Serial.println("Received Detections");
-            // Serial.println(dataBuffer);
-            processDetections(dataBuffer);
-            newDataAvailable = false; // Reset the flag after processing
-            printDetectionsFlag = true;
+            processDetections(dataBuffer); // Process the data
+            newDataAvailable = false; // Reset the data availability flag
+            printDetectionsFlag = true; // Set flag to print detections
         }
 
-        PT_YIELD(pt);  // Allow other protothreads to run
+        PT_YIELD(pt);
     }
 
     PT_END(pt);
 }
 
+// Protothread for printing detection information
 static int protothreadPrint(struct pt* pt) {
     PT_BEGIN(pt);
 
     while (1) {
-        // Check if there are detections to print
         if (printDetectionsFlag) {
-            printDetections();
-            printDetectionsFlag = false; // Reset the flag
+            printDetections(); // Print detection data
+            printDetectionsFlag = false; // Reset the print flag
         }
 
-        PT_YIELD(pt); // Allow other protothreads to run
+        PT_YIELD(pt);
     }
 
     PT_END(pt);
 }
 
 
-
 void processDetections(char data[]) {
-    // Tokenize the data string into individual detections using strtok
+    // Process the received data into individual detections
     char* detection = strtok(data, ";");
 
     while (detection != NULL) {
-        // Serial.println(detection);
-        parseDetection(detection);
-        detection = strtok(NULL, ";"); // Get next detection
+        parseDetection(detection); // Parse each detection
+        detection = strtok(NULL, ";"); // Move to next detection
     }
 }
 
 
 void parseDetection(char* detection) {
+	// Parse a single detection string into its components
     char class_name[MAX_DETECTION_LENGTH];
     float confidence;
     float depth_mm;
@@ -120,49 +121,58 @@ void parseDetection(char* detection) {
     char direction[6];
     char* token;
     char* rest = detection;
-
-        token = strtok_r(rest, ",", &rest);
+	
+	// Extract and convert detection components from the string
+	
+	// Get ClassName
+    token = strtok_r(rest, ",", &rest);
     if (token != NULL) {
         strncpy(class_name, token, MAX_DETECTION_LENGTH);
     }
 
+	// Get Confidence
     token = strtok_r(rest, ",", &rest);
     if (token != NULL) {
         confidence = atof(token);
     }
 
-    // Continue for the rest of the fields
+	// Get Timestamp
     token = strtok_r(rest, ",", &rest);
     if (token != NULL) {
         timestamp = atof(token);
     }
 
-    // Continue for the rest of the fields
+	// Get Depth
     token = strtok_r(rest, ",", &rest);
     if (token != NULL) {
         depth_mm = atof(token);
     }
-
+	
+	// Get X Component of Depth
     token = strtok_r(rest, ",", &rest);
     if (token != NULL) {
         x = atof(token);
     }
 
+	// Get Y Component of Depth
     token = strtok_r(rest, ",", &rest);
     if (token != NULL) {
         y = atof(token);
     }
 
+	// Get Z Component of Depth
     token = strtok_r(rest, ",", &rest);
     if (token != NULL) {
         z = atof(token);
     }
-
+	
+	// Get Horizontal Angle
     token = strtok_r(rest, ",", &rest);
     if (token != NULL) {
         horizontal_angle = atof(token);
     }
-
+	
+	// Get Direction
     token = strtok_r(rest, ",", &rest);
     if (token != NULL) {
         strncpy(direction, token, MAX_DETECTION_LENGTH);
@@ -182,7 +192,7 @@ void printDetections() {
     Serial.println("Closest Detection:");
     printDetection(closest);
 
-    // Print the latest detection - Not Right Now - Working on it
+    // Print the latest detection
     Detection latest = getLatestDetection();
     Serial.println("Latest Detection:");
     printDetection(latest);
