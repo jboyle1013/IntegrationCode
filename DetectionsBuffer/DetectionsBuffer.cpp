@@ -85,7 +85,7 @@ Detection getClosestDetection() {
 
 // Function to get the detection with the earliest timestamp
 Detection getLatestDetection() {
-    float minTime = 1000; // Initialize with a large timestamp value
+    float minTime = 10000; // Initialize with a large timestamp value
     Detection latestDetection;
 
     // Loop through the buffer to find the detection with the earliest timestamp

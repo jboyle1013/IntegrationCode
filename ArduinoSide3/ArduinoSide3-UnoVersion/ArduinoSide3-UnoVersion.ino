@@ -22,7 +22,9 @@ void setup() {
     Serial.begin(9600); // Start serial communication with the computer
     mySerial.begin(9600); // Start serial communication with the sensor module
     clearBuffer(); // Clear the data buffer
-    delay(45000); // Initial delay for system stabilization
+    // Wait for everything to stabilize
+    // delay(60000); // Use this delay if starting at the same time as the Jetson
+    delay(2000); // Use this delay if starting after Jetson is set up and has been running
 
     // Initialize protothreads
     PT_INIT(&ptRead);
